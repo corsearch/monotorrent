@@ -80,7 +80,7 @@ namespace SampleClient
             }
 
             DhtEngine dht = new DhtEngine (new IPEndPoint (IPAddress.Any, port));
-            await engine.RegisterDhtAsync (dht);
+            //await engine.RegisterDhtAsync (dht);
 
             // This starts the Dht engine but does not wait for the full initialization to
             // complete. This is because it can take up to 2 minutes to bootstrap, depending
@@ -199,6 +199,7 @@ namespace SampleClient
                     AppendFormat (sb, "Total Written:      {0:0.00} kB", engine.DiskManager.TotalWritten / 1024.0);
                     AppendFormat (sb, "Open Connections:    {0}", engine.ConnectionManager.OpenConnections);
 
+                    if (false)
                     foreach (TorrentManager manager in torrents) {
                         AppendSeparator (sb);
                         AppendFormat (sb, "State:           {0}", manager.State);

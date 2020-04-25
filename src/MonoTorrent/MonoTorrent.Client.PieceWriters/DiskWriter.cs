@@ -29,6 +29,7 @@
 
 using System;
 using System.IO;
+using ReusableTasks;
 
 namespace MonoTorrent.Client.PieceWriters
 {
@@ -39,7 +40,7 @@ namespace MonoTorrent.Client.PieceWriters
         public int OpenFiles => streamsBuffer.Count;
 
         public DiskWriter ()
-            : this (10)
+            : this (10000)
         {
 
         }
@@ -47,11 +48,6 @@ namespace MonoTorrent.Client.PieceWriters
         public DiskWriter (int maxOpenFiles)
         {
             streamsBuffer = new FileStreamBuffer (maxOpenFiles);
-        }
-
-        public void Close (TorrentFile file)
-        {
-            streamsBuffer.CloseStream (file.FullPath);
         }
 
         public void Dispose ()
@@ -64,15 +60,34 @@ namespace MonoTorrent.Client.PieceWriters
             return streamsBuffer.GetStream (file, access);
         }
 
-        public void Move (TorrentFile file, string newPath, bool overwrite)
+        public ReusableTask CloseAsync (TorrentFile file)
+        {
+            streamsBuffer.CloseStream (file.FullPath);
+            return ReusableTask.CompletedTask;
+        }
+
+        public ReusableTask<bool> ExistsAsync (TorrentFile file)
+        {
+            return ReusableTask.FromResult (File.Exists (file.FullPath));
+        }
+
+        public async ReusableTask FlushAsync (TorrentFile file)
+        {
+            Stream s = streamsBuffer.FindStream (file.FullPath);
+            await s?.FlushAsync ();
+        }
+
+        public ReusableTask MoveAsync (TorrentFile file, string newPath, bool overwrite)
         {
             streamsBuffer.CloseStream (file.FullPath);
             if (overwrite)
                 File.Delete (newPath);
             File.Move (file.FullPath, newPath);
+
+            return ReusableTask.CompletedTask;
         }
 
-        public int Read (TorrentFile file, long offset, byte[] buffer, int bufferOffset, int count)
+        public async ReusableTask<int> ReadAsync (TorrentFile file, long offset, byte[] buffer, int bufferOffset, int count)
         {
             Check.File (file);
             Check.Buffer (buffer);
@@ -86,10 +101,10 @@ namespace MonoTorrent.Client.PieceWriters
 
             if (s.Position != offset)
                 s.Seek (offset, SeekOrigin.Begin);
-            return s.Read (buffer, bufferOffset, count);
+            return await s.ReadAsync (buffer, bufferOffset, count);
         }
 
-        public void Write (TorrentFile file, long offset, byte[] buffer, int bufferOffset, int count)
+        public async ReusableTask WriteAsync (TorrentFile file, long offset, byte[] buffer, int bufferOffset, int count)
         {
             Check.File (file);
             Check.Buffer (buffer);
@@ -99,18 +114,7 @@ namespace MonoTorrent.Client.PieceWriters
 
             TorrentFileStream stream = GetStream (file, FileAccess.ReadWrite);
             stream.Seek (offset, SeekOrigin.Begin);
-            stream.Write (buffer, bufferOffset, count);
-        }
-
-        public bool Exists (TorrentFile file)
-        {
-            return File.Exists (file.FullPath);
-        }
-
-        public void Flush (TorrentFile file)
-        {
-            Stream s = streamsBuffer.FindStream (file.FullPath);
-            s?.Flush ();
+            await stream.WriteAsync (buffer, bufferOffset, count);
         }
     }
 }
