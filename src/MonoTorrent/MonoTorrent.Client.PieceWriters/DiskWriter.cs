@@ -29,41 +29,39 @@
 
 using System;
 using System.IO;
+using System.Threading;
 using ReusableTasks;
 
 namespace MonoTorrent.Client.PieceWriters
 {
     public class DiskWriter : IPieceWriter
     {
-        readonly FileStreamBuffer streamsBuffer;
+        readonly SemaphoreSlim Limiter;
 
-        public int OpenFiles => streamsBuffer.Count;
+        public int OpenFiles => StreamCache.Count;
+
+        readonly FileStreamBuffer StreamCache;
 
         public DiskWriter ()
-            : this (10000)
+            : this (196)
         {
 
         }
 
         public DiskWriter (int maxOpenFiles)
         {
-            streamsBuffer = new FileStreamBuffer (maxOpenFiles);
+            StreamCache = new FileStreamBuffer (maxOpenFiles);
+            Limiter = new SemaphoreSlim (maxOpenFiles);
         }
 
         public void Dispose ()
         {
-            streamsBuffer.Dispose ();
+            StreamCache.Dispose ();
         }
 
-        TorrentFileStream GetStream (TorrentFile file, FileAccess access)
+        public async ReusableTask CloseAsync (TorrentFile file)
         {
-            return streamsBuffer.GetStream (file, access);
-        }
-
-        public ReusableTask CloseAsync (TorrentFile file)
-        {
-            streamsBuffer.CloseStream (file.FullPath);
-            return ReusableTask.CompletedTask;
+            await StreamCache.CloseStreamAsync (file);
         }
 
         public ReusableTask<bool> ExistsAsync (TorrentFile file)
@@ -72,19 +70,15 @@ namespace MonoTorrent.Client.PieceWriters
         }
 
         public async ReusableTask FlushAsync (TorrentFile file)
-        {
-            Stream s = streamsBuffer.FindStream (file.FullPath);
-            await s?.FlushAsync ();
-        }
+            => await StreamCache.FlushAsync (file);
 
-        public ReusableTask MoveAsync (TorrentFile file, string newPath, bool overwrite)
+        public async ReusableTask MoveAsync (TorrentFile file, string newPath, bool overwrite)
         {
-            streamsBuffer.CloseStream (file.FullPath);
+            await StreamCache.CloseStreamAsync (file);
+
             if (overwrite)
                 File.Delete (newPath);
             File.Move (file.FullPath, newPath);
-
-            return ReusableTask.CompletedTask;
         }
 
         public async ReusableTask<int> ReadAsync (TorrentFile file, long offset, byte[] buffer, int bufferOffset, int count)
@@ -95,13 +89,15 @@ namespace MonoTorrent.Client.PieceWriters
             if (offset < 0 || offset + count > file.Length)
                 throw new ArgumentOutOfRangeException (nameof (offset));
 
-            Stream s = GetStream (file, FileAccess.Read);
-            if (s.Length < offset + count)
-                return 0;
+            using (await Limiter.EnterAsync ()) {
+                using var rented = StreamCache.GetStream (file, FileAccess.Read);
+                if (rented.Stream.Length < offset + count)
+                    return 0;
 
-            if (s.Position != offset)
-                s.Seek (offset, SeekOrigin.Begin);
-            return await s.ReadAsync (buffer, bufferOffset, count);
+                if (rented.Stream.Position != offset)
+                    rented.Stream.Seek (offset, SeekOrigin.Begin);
+                return await rented.Stream.ReadAsync (buffer, bufferOffset, count);
+            }
         }
 
         public async ReusableTask WriteAsync (TorrentFile file, long offset, byte[] buffer, int bufferOffset, int count)
@@ -112,9 +108,11 @@ namespace MonoTorrent.Client.PieceWriters
             if (offset < 0 || offset + count > file.Length)
                 throw new ArgumentOutOfRangeException (nameof (offset));
 
-            TorrentFileStream stream = GetStream (file, FileAccess.ReadWrite);
-            stream.Seek (offset, SeekOrigin.Begin);
-            await stream.WriteAsync (buffer, bufferOffset, count);
+            using (await Limiter.EnterAsync ()) {
+                using var rented = StreamCache.GetStream (file, FileAccess.ReadWrite);
+                rented.Stream.Seek (offset, SeekOrigin.Begin);
+                await rented.Stream.WriteAsync (buffer, bufferOffset, count);
+            }
         }
     }
 }

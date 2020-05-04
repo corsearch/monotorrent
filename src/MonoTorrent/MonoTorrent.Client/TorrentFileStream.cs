@@ -27,21 +27,32 @@
 //
 
 
+using System;
 using System.IO;
 
 namespace MonoTorrent.Client
 {
     class TorrentFileStream : FileStream
     {
-        public TorrentFile File { get; }
+        internal bool InUse { get; private set; }
 
-        public string Path => File.FullPath;
-
-
-        public TorrentFileStream (TorrentFile file, FileMode mode, FileAccess access, FileShare share)
-            : base (file.FullPath, mode, access, share, 1)
+        public TorrentFileStream (string path, FileMode mode, FileAccess access, FileShare share)
+            : base (path, mode, access, share, 1, FileOptions.Asynchronous | FileOptions.RandomAccess)
         {
-            File = file;
+        }
+
+        internal void Release ()
+        {
+            if (!InUse)
+                throw new InvalidOperationException ("Cannot release a stream which is not in use");
+            InUse = false;
+        }
+
+        internal void Use ()
+        {
+            if (InUse)
+                throw new InvalidOperationException ("This stream is already in use");
+            InUse = true;
         }
     }
 }
