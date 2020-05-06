@@ -43,12 +43,12 @@ namespace MonoTorrent.Client.PieceWriters
             public RentedStream (TorrentFileStream stream)
             {
                 Stream = stream;
-                stream.Use ();
+                stream?.Use ();
             }
 
             public void Dispose ()
             {
-                Stream.Release ();
+                Stream?.Release ();
             }
 
         }
@@ -65,6 +65,7 @@ namespace MonoTorrent.Client.PieceWriters
         {
             MaxStreams = maxStreams;
             Streams = new Dictionary<TorrentFile, TorrentFileStream> (maxStreams);
+            UsageOrder = new List<TorrentFile> ();
         }
 
         internal async ReusableTask<bool> CloseStreamAsync (TorrentFile file)
@@ -82,16 +83,21 @@ namespace MonoTorrent.Client.PieceWriters
         internal async ReusableTask FlushAsync (TorrentFile file)
         {
             using var rented = GetStream (file);
-            if (rented.Stream != null)
-                await Streams[file]?.FlushAsync ();
+            await rented.Stream?.FlushAsync ();
         }
 
         internal RentedStream GetStream (TorrentFile file)
-            => new RentedStream (Streams[file]);
+        {
+            if (Streams.TryGetValue (file, out TorrentFileStream stream))
+                return new RentedStream (stream);
+            return new RentedStream (null);
+        }
 
         internal RentedStream GetStream (TorrentFile file, FileAccess access)
         {
-            TorrentFileStream s = Streams[file];
+            TorrentFileStream s;
+            if (!Streams.TryGetValue (file, out s))
+                s = null;
 
             if (s != null) {
                 // If we are requesting write access and the current stream does not have it
@@ -108,7 +114,8 @@ namespace MonoTorrent.Client.PieceWriters
 
             if (s == null) {
                 if (!File.Exists (file.FullPath)) {
-                    Directory.CreateDirectory (Path.GetDirectoryName (file.FullPath));
+                    if (!string.IsNullOrEmpty (Path.GetDirectoryName (file.FullPath)))
+                        Directory.CreateDirectory (Path.GetDirectoryName (file.FullPath));
                     NtfsSparseFile.CreateSparse (file.FullPath, file.Length);
                 }
                 s = new TorrentFileStream (file.FullPath, FileMode.OpenOrCreate, access, FileShare.ReadWrite);

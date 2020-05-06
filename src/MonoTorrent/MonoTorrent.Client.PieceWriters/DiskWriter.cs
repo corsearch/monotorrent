@@ -110,8 +110,15 @@ namespace MonoTorrent.Client.PieceWriters
 
             using (await Limiter.EnterAsync ()) {
                 using var rented = StreamCache.GetStream (file, FileAccess.ReadWrite);
+
+                // FileStream.WriteAsync does some work synchronously, according to the profiler.
+                // It looks like if the file is too small it is expanded (SetLength is called)
+                // synchronously before the asynchronous Write is performed.
+                //
+                // We also want the Seek operation to execute on the threadpool.
+                await MainLoop.SwitchToThreadpool ();
                 rented.Stream.Seek (offset, SeekOrigin.Begin);
-                await rented.Stream.WriteAsync (buffer, bufferOffset, count);
+                await rented.Stream.WriteAsync (buffer, bufferOffset, count).ConfigureAwait (false);
             }
         }
     }
