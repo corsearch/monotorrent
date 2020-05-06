@@ -44,8 +44,6 @@ namespace MonoTorrent.Client.PieceWriters
         public void Setup ()
         {
             Temp = Path.GetTempPath () + "monotorrent_tests";
-            Directory.CreateDirectory (Temp);
-
             TorrentFile = new TorrentFile ("test.file", 12345, Path.Combine (Temp, "test.file"));
             Writer = new DiskWriter ();
         }
@@ -54,7 +52,9 @@ namespace MonoTorrent.Client.PieceWriters
         public void Teardown ()
         {
             Writer.Dispose ();
-            Directory.Delete (Temp, true);
+
+            if (Directory.Exists (Temp))
+                Directory.Delete (Temp, true);
         }
 
         [Test]
