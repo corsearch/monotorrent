@@ -39,9 +39,6 @@ jobs:
       - name: Setup NuGet.exe for use with actions
         uses: NuGet/setup-nuget@v1.0.2
 
-      - name: Add GPR Source using nuget.exe
-        run: nuget sources add -name "GPR" -Source "https://nuget.pkg.github.com/marketly/index.json" -Username marketly -Password ${{ secrets.GITHUB_TOKEN }}
-
       - name: nuget push
         run: nuget push ./out/*.nupkg -source "GPR" -SkipDuplicate
         working-directory: ./src
