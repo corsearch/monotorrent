@@ -84,8 +84,10 @@ Notable features include:
       <RepositoryType>git</RepositoryType>
       <RepositoryBranch>$(GitBranch)</RepositoryBranch>
       <RepositoryCommit>$(GitSha)</RepositoryCommit>
-      <RepositoryUrl>https://github.com/mono/monotorrent</RepositoryUrl>
-
+      <RepositoryUrl>https://github.com/marketly/monotorrent</RepositoryUrl>
+      <PackageId>MonoTorrent</PackageId>
+      <Company>Marketly</Company>
+      
       <Copyright>Alan McGovern, Gregor Burger</Copyright>
     </PropertyGroup>
   </Target>
