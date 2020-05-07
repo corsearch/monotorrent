@@ -36,6 +36,10 @@ jobs:
         run: dotnet test --no-restore --verbosity normal
         working-directory: ./src
 
+      - name: Set Api Key
+        run: dotnet nuget setApiKey ${{secrets.GITHUB_TOKEN}} -Source "https://nuget.pkg.github.com/marketly/index.json"
+        working-directory: ./src
+
       - name: Push generated package to GitHub registry
         run: dotnet nuget push ./out/*.nupkg --skip-duplicate --no-symbols true
         working-directory: ./src
