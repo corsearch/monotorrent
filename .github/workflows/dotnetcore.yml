@@ -25,10 +25,6 @@ jobs:
         env:
           NUGET_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}      
     
-      - name: Install dependencies
-        run: nuget restore MonoTorrent.sln
-        working-directory: ./src
-
       - name: Build solution and generate NuGet package
         run: dotnet pack -c Release -o out --no-restore
         working-directory: ./src
