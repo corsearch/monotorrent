@@ -15,3 +15,9 @@
 /src/TrackerApp/bin/
 /src/TrackerApp/obj/
 /src/out
+/src/nuget.exe
+/src/nuget.config
+/src/azure.config
+/foo.config
+/bar.config
+/nuget.exe
