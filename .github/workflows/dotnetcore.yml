@@ -26,6 +26,11 @@ jobs:
         run: (Get-Content nuget.config).replace('{{secrets.NUGET_API_KEY_NAME}}', '${{ secrets.NUGET_API_KEY_NAME }}') | Set-Content nuget.config
         shell: pwsh
         working-directory: .
+
+      - name: echo content
+        run: echo (Get-Content nuget.config)
+        shell: pwsh
+        working-directory: .
     
       - name: Install nuget
         uses: nuget/setup-nuget@v1
