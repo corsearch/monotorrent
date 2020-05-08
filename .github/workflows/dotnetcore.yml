@@ -25,14 +25,14 @@ jobs:
       - name: Find and Replace
         uses: jacobtomlinson/gha-find-replace@master
         with:
-           find: "{{secrets.NuGetAPIKey}}"
-           replace: "${{ secrets.NuGetAPIKey }}"
+           find: "{{secrets.NUGET_API_KEY_NAME}}"
+           replace: "${{ secrets.NUGET_API_KEY_NAME }}"
            include: "nuget.config"
         
       - name: Install nuget
         uses: nuget/setup-nuget@v1
         with:
-            nuget-api-key: ${{ secrets.NuGetAPIKey }}
+            nuget-api-key: ${{ secrets.NUGET_API_KEY_NAME }}
             nuget-version: '5.x'
     
       - name: Install dependencies
@@ -48,4 +48,4 @@ jobs:
         working-directory: ./src
 
       - name: Push generated package to GitHub registry
-        run: nuget push ./src/out/MonoTorrent.1.0.21.nupkg -Source "https://nuget.pkg.github.com/marketly/index.json" -ApiKey ${{ secrets.NuGetAPIKey }}
+        run: nuget push ./src/out/MonoTorrent.1.0.21.nupkg -Source "https://nuget.pkg.github.com/marketly/index.json" -ApiKey ${{ secrets.NUGET_API_KEY_NAME }}
