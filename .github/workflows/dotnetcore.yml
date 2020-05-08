@@ -29,7 +29,8 @@ jobs:
             nuget-version: '5.x'
     
       - name: Install dependencies
-        run: nuget restore
+        run: nuget restore MonoTorrent.sln
+        working-directory: ./src
 
       - name: Build solution and generate NuGet package
         run: dotnet pack -c Release -o out --no-restore
