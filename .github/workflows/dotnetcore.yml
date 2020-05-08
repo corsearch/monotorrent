@@ -34,5 +34,4 @@ jobs:
         working-directory: ./src
 
       - name: Push generated package to GitHub registry
-        run: dotnet nuget push ./out/*.nupkg --skip-duplicate --no-symbols true
-        working-directory: ./src
+        run: dotnet nuget push ./src/out/*.nupkg --skip-duplicate --no-symbols true
