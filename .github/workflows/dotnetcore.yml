@@ -33,6 +33,9 @@ jobs:
             nuget-api-key: ${{ secrets.NUGET_API_KEY_NAME }}
             nuget-version: '5.x'
     
+      - name: Set Api Key
+        run: nuget setapikey ${{ secrets.NUGET_API_KEY_NAME }} -Source "https://nuget.pkg.github.com/marketly/index.json"
+    
       - name: Install dependencies
         run: nuget restore MonoTorrent.sln
         working-directory: ./src
