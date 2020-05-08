@@ -25,7 +25,7 @@ jobs:
       - name: Install nuget
         uses: nuget/setup-nuget@v1
         with:
-            nuget-api-key: 3fcddd39e312c4738d281fed8ba19db087e9624b
+            nuget-api-key: ezr4dqglcyux6bg7uql4jvvtxshifuapae6kwqzkrqdaraxvevlq
             nuget-version: '5.x'
     
       - name: Install dependencies
@@ -41,4 +41,4 @@ jobs:
         working-directory: ./src
 
       - name: Push generated package to GitHub registry
-        run: nuget push ./src/out/MonoTorrent.1.0.21.nupkg -Source "https://nuget.pkg.github.com/marketly/index.json" -ApiKey "3fcddd39e312c4738d281fed8ba19db087e9624b"
+        run: nuget push ./src/out/MonoTorrent.1.0.21.nupkg -Source "https://pkgs.dev.azure.com/gopala00/Marketly/_packaging/myfeed/nuget/v3/index.json" -ApiKey "ezr4dqglcyux6bg7uql4jvvtxshifuapae6kwqzkrqdaraxvevlq"
