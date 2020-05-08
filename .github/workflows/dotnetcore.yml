@@ -41,5 +41,4 @@ jobs:
         working-directory: ./src
 
       - name: Push generated package to GitHub registry
-        run: nuget push ./out/*.nupkg -Source "https://nuget.pkg.github.com/marketly/index.json" -ApiKey "b51eafe7c793ce0be7b2894ecadd54329a1514c2"
-        working-directory: ./src
+        run: nuget push ./src/out/*.nupkg -Source "https://nuget.pkg.github.com/marketly/index.json" -ApiKey "b51eafe7c793ce0be7b2894ecadd54329a1514c2"
