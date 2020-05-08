@@ -22,14 +22,6 @@ jobs:
         with:
           dotnet-version: 3.1.101
 
-      - name: Find and Replace
-        uses: BjornLuG/substitute-string-action@v1
-        id: sub
-        with:
-           _input-file: 'nuget.config'
-           _output-file: 'nuget.config'
-           {{secrets.NUGET_API_KEY_NAME}}: ${{ secrets.NUGET_API_KEY_NAME }}
-    
       - name: Install nuget
         uses: nuget/setup-nuget@v1
         with:
