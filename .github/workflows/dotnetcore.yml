@@ -24,6 +24,19 @@ jobs:
           source-url: https://nuget.pkg.github.com/marketly/index.json
         env:
           NUGET_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}      
+
+      - name: Install nuget
+        uses: nuget/setup-nuget@v1
+        with:
+            nuget-api-key: ${{secrets.GITHUB_TOKEN}}
+            nuget-version: '5.x'
+    
+      - name: Set Api Key
+        run: nuget setapikey ${{secrets.GITHUB_TOKEN}} -Source "https://nuget.pkg.github.com/marketly/index.json"
+    
+      - name: Install dependencies
+        run: nuget restore MonoTorrent.sln
+        working-directory: ./src
     
       - name: Build solution and generate NuGet package
         run: dotnet pack -c Release -o out --no-restore
