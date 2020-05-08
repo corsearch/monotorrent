@@ -23,7 +23,7 @@ jobs:
           dotnet-version: 3.1.101
 
       - name: Find and Replace
-        run: (Get-Content nuget.config).replace('{{secrets.NUGET_API_KEY_NAME}}', '${{ secrets.NUGET_API_KEY_NAME }}') | Set-Content nuget.config
+        run: (Get-Content nuget.config).replace('{{secrets.NUGET_API_KEY}}', '${{ secrets.NUGET_API_KEY }}') | Set-Content nuget.config
         shell: pwsh
         working-directory: .
 
@@ -35,11 +35,11 @@ jobs:
       - name: Install nuget
         uses: nuget/setup-nuget@v1
         with:
-            nuget-api-key: ${{ secrets.NUGET_API_KEY_NAME }}
+            nuget-api-key: ${{ secrets.NUGET_API_KEY }}
             nuget-version: '5.x'
     
       - name: Set Api Key
-        run: nuget setapikey ${{ secrets.NUGET_API_KEY_NAME }} -Source "https://nuget.pkg.github.com/marketly/index.json"
+        run: nuget setapikey ${{ secrets.NUGET_API_KEY }} -Source "https://nuget.pkg.github.com/marketly/index.json"
     
       - name: Install dependencies
         run: nuget restore MonoTorrent.sln
@@ -54,4 +54,4 @@ jobs:
         working-directory: ./src
 
       - name: Push generated package to GitHub registry
-        run: nuget push ./src/out/MonoTorrent.1.0.21.nupkg -Source "https://nuget.pkg.github.com/marketly/index.json" -ApiKey ${{ secrets.NUGET_API_KEY_NAME }}
+        run: nuget push ./src/out/MonoTorrent.1.0.21.nupkg -Source "https://nuget.pkg.github.com/marketly/index.json" -ApiKey ${{ secrets.NUGET_API_KEY }}
