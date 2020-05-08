@@ -26,7 +26,7 @@ jobs:
         uses: jacobtomlinson/gha-find-replace@master
         with:
            find: "{{secrets.NuGetAPIKey}}"
-           replace: ${{ secrets.NuGetAPIKey }}
+           replace: "${{ secrets.NuGetAPIKey }}"
            include: "nuget.config"
         
       - name: Install nuget
