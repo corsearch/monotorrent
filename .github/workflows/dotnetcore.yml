@@ -8,7 +8,7 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
 
     name: Update NuGet package
 
@@ -23,12 +23,13 @@ jobs:
           dotnet-version: 3.1.101
 
       - name: Find and Replace
-        uses: jacobtomlinson/gha-find-replace@master
+        uses: BjornLuG/substitute-string-action@v1
+        id: sub
         with:
-           find: "{{secrets.NUGET_API_KEY_NAME}}"
-           replace: "${{ secrets.NUGET_API_KEY_NAME }}"
-           include: "nuget.config"
-        
+           _input-file: nuget.config
+           _output-file: nuget.config
+           {{secrets.NUGET_API_KEY_NAME}}: ${{ secrets.NUGET_API_KEY_NAME }}
+    
       - name: Install nuget
         uses: nuget/setup-nuget@v1
         with:
