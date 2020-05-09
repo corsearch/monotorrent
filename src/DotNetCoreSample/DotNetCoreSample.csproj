@@ -3,7 +3,14 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp2.1</TargetFramework>
+
+    <GitVersionFile>version.txt</GitVersionFile>
+    <GitIgnoreBranchVersion>true</GitIgnoreBranchVersion>
+    <GitIgnoreTagVersion>true</GitIgnoreTagVersion>
+    <GitCommitsRelativeTo>$([MSBuild]::GetDirectoryNameOfFileAbove ('$(MSBuildThisFileDirectory)', 'version.txt'))\</GitCommitsRelativeTo>
+
     <BeforePack>$(BeforePack);SetPackProperties</BeforePack>
+    <PackDependsOn>$(PackDependsOn)</PackDependsOn>
   </PropertyGroup>
 
   <Target Name="SetAssemblyVersion" BeforeTargets="GetAssemblyVersion" Condition="'$(RestoreSuccess)' != 'true' Or '$(Configuration)' == 'Debug' ">
@@ -64,6 +71,10 @@
   <ItemGroup>
     <Compile Include="..\SampleClient\main.cs" />
     <Compile Include="..\SampleClient\Top10Listener.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="..\..\LICENSE" Pack="true" PackagePath="/" />
   </ItemGroup>
 
   <ItemGroup>
