@@ -47,5 +47,5 @@ jobs:
         working-directory: ./src
 
       - name: Push generated package to GitHub registry
-        run: dotnet nuget push ./out/MonoTorrent.1.0.21.nupkg --skip-duplicate --source "https://nuget.pkg.github.com/marketly/index.json" -k ${{secrets.GITHUB_TOKEN}} --no-symbols true
+        run: dotnet nuget push ./out/MonoTorrent.1.0.22.nupkg --skip-duplicate --source "https://nuget.pkg.github.com/marketly/index.json" -k ${{secrets.GITHUB_TOKEN}} --no-symbols true
         working-directory: ./src
