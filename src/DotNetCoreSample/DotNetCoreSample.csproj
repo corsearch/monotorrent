@@ -5,6 +5,35 @@
     <TargetFramework>netcoreapp2.1</TargetFramework>
   </PropertyGroup>
 
+  <!-- NuGet related properties. We need to run this as part of the 'PackDependsOn' dependencies
+      to ensure our GitInfo related properties have been calculated correctly. -->
+  <Target Name="SetPackProperties" DependsOnTargets="SetAssemblyVersion">
+    <PropertyGroup>
+      <Authors>Alan McGovern,Olivier Dufour</Authors>
+      <PackageDescription>
+        Sample app to demo MonoTorrent
+      </PackageDescription>
+      <PackageLicenseFile>LICENSE</PackageLicenseFile>
+      <PackageProjectUrl>https://github.com/mono/monotorrent</PackageProjectUrl>
+      <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+      <PackageVersion>$(MonoTorrentFileVersion)$(MonoTorrentReleaseSuffix)</PackageVersion>
+      <PackageTags>bittorrent;torrent</PackageTags>
+
+      <IncludeSource>true</IncludeSource>
+      <IncludeSymbols>true</IncludeSymbols>
+      <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+
+      <RepositoryType>git</RepositoryType>
+      <RepositoryBranch>$(GitBranch)</RepositoryBranch>
+      <RepositoryCommit>$(GitSha)</RepositoryCommit>
+      <RepositoryUrl>https://github.com/marketly/monotorrent</RepositoryUrl>
+      <PackageId>MonoTorrentSample</PackageId>
+      <Company>Marketly</Company>
+
+      <Copyright>Alan McGovern, Gregor Burger</Copyright>
+    </PropertyGroup>
+  </Target>
+
   <ItemGroup>
     <ProjectReference Include="..\MonoTorrent\MonoTorrent.csproj" />
   </ItemGroup>
