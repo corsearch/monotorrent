@@ -3,6 +3,7 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp2.1</TargetFramework>
+    <BeforePack>$(BeforePack);SetPackProperties</BeforePack>
   </PropertyGroup>
 
   <!-- NuGet related properties. We need to run this as part of the 'PackDependsOn' dependencies
