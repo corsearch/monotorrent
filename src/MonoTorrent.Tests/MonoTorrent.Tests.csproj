@@ -3,6 +3,8 @@
 
   <PropertyGroup>
     <TargetFramework>net472</TargetFramework>
+    <RepositoryType>git</RepositoryType>
+    <RepositoryUrl>https://github.com/marketly/monotorrent</RepositoryUrl>
   </PropertyGroup>
 
    <ItemGroup>
