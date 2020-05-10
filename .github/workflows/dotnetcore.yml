@@ -39,8 +39,6 @@ jobs:
         run: .\incrversion
         shell: pwsh
         working-directory: .
-        env:
-          VERSION: ${{ steps.incr-version.outputs.version }}
   
       - name: Install dependencies
         run: nuget restore MonoTorrent.sln
@@ -49,6 +47,8 @@ jobs:
       - name: Build solution and generate NuGet package
         run: dotnet pack -c Release -o out --no-restore /property:Version=$VERSION
         working-directory: ./src
+        env:
+          VERSION: ${{ steps.incr-version.outputs.version }}
 
       - name: Test
         run: dotnet test --no-restore --verbosity normal
