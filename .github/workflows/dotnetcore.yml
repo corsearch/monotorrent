@@ -35,16 +35,19 @@ jobs:
         run: nuget setapikey ${{secrets.GITHUB_TOKEN}} -Source "https://nuget.pkg.github.com/marketly/index.json"
     
       - name: Increment version.txt
+        id: incr-version
         run: .\incrversion
         shell: pwsh
         working-directory: .
-
+        env:
+          VERSION: ${{ steps.incr-version.outputs.version }}
+  
       - name: Install dependencies
         run: nuget restore MonoTorrent.sln
         working-directory: ./src
     
       - name: Build solution and generate NuGet package
-        run: dotnet pack -c Release -o out --no-restore /property:Version=1.2.3.4
+        run: dotnet pack -c Release -o out --no-restore /property:Version=$VERSION
         working-directory: ./src
 
       - name: Test
