@@ -3,66 +3,9 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp2.1</TargetFramework>
-
-    <GitVersionFile>version.txt</GitVersionFile>
-    <GitIgnoreBranchVersion>true</GitIgnoreBranchVersion>
-    <GitIgnoreTagVersion>true</GitIgnoreTagVersion>
-    <GitCommitsRelativeTo>$([MSBuild]::GetDirectoryNameOfFileAbove ('$(MSBuildThisFileDirectory)', 'version.txt'))\</GitCommitsRelativeTo>
-
-    <BeforePack>$(BeforePack);SetPackProperties</BeforePack>
-    <PackDependsOn>$(PackDependsOn)</PackDependsOn>
+    <RepositoryType>git</RepositoryType>
+    <RepositoryUrl>https://github.com/marketly/monotorrent</RepositoryUrl>
   </PropertyGroup>
-
-  <Target Name="SetAssemblyVersion" BeforeTargets="GetAssemblyVersion" Condition="'$(RestoreSuccess)' != 'true' Or '$(Configuration)' == 'Debug' ">
-    <PropertyGroup>
-      <Version>0.0.0.1</Version>
-      <AssemblyVersion>$(Version)</AssemblyVersion>
-      <FileVersion Condition="'$(FileVersion)' == ''">$(Version)</FileVersion>
-      <InformationalVersion Condition="'$(InformationalVersion)' == ''">$(Version)-Debug</InformationalVersion>
-    </PropertyGroup>
-  </Target>
-
-  <!-- Restore success is in the .nuget.g.props file generated as part of msbuild /t:Restore. We do not -->
-  <!-- want this logic to run if restore hasn't been executed as the 'GitVersion' target won't exist.   -->
-  <Target Name="SetAssemblyVersion" BeforeTargets="GetAssemblyVersion" Condition="'$(RestoreSuccess)' == 'true' And '$(Configuration)' == 'Release' " DependsOnTargets="GitVersion">
-    <PropertyGroup>
-      <MonoTorrentFileVersion>$(GitSemVerMajor).$(GitSemVerMinor).$(GitSemVerPatch)</MonoTorrentFileVersion>
-      <MonoTorrentInformationalVersion>$(MonoTorrentFileVersion)-$(GitBranch)+$(GitCommit)</MonoTorrentInformationalVersion>
-
-      <AssemblyVersion Condition="'$(AssemblyVersion)' == ''">$(MonoTorrentABIVersion)</AssemblyVersion>
-      <FileVersion Condition="'$(FileVersion)' == ''">$(MonoTorrentFileVersion)</FileVersion>
-      <InformationalVersion Condition="'$(InformationalVersion)' == ''">$(MonoTorrentInformationalVersion)</InformationalVersion>
-    </PropertyGroup>
-  </Target>
-
-  <!-- NuGet related properties. We need to run this as part of the 'PackDependsOn' dependencies
-      to ensure our GitInfo related properties have been calculated correctly. -->
-  <Target Name="SetPackProperties" DependsOnTargets="SetAssemblyVersion">
-    <PropertyGroup>
-      <Authors>Alan McGovern,Olivier Dufour</Authors>
-      <PackageDescription>
-        Sample app to demo MonoTorrent
-      </PackageDescription>
-      <PackageLicenseFile>LICENSE</PackageLicenseFile>
-      <PackageProjectUrl>https://github.com/mono/monotorrent</PackageProjectUrl>
-      <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
-      <PackageVersion>$(MonoTorrentFileVersion)$(MonoTorrentReleaseSuffix)</PackageVersion>
-      <PackageTags>bittorrent;torrent</PackageTags>
-
-      <IncludeSource>true</IncludeSource>
-      <IncludeSymbols>true</IncludeSymbols>
-      <SymbolPackageFormat>snupkg</SymbolPackageFormat>
-
-      <RepositoryType>git</RepositoryType>
-      <RepositoryBranch>$(GitBranch)</RepositoryBranch>
-      <RepositoryCommit>$(GitSha)</RepositoryCommit>
-      <RepositoryUrl>https://github.com/marketly/monotorrent</RepositoryUrl>
-      <PackageId>MonoTorrentSample</PackageId>
-      <Company>Marketly</Company>
-
-      <Copyright>Alan McGovern, Gregor Burger</Copyright>
-    </PropertyGroup>
-  </Target>
 
   <ItemGroup>
     <ProjectReference Include="..\MonoTorrent\MonoTorrent.csproj" />
@@ -71,16 +14,5 @@
   <ItemGroup>
     <Compile Include="..\SampleClient\main.cs" />
     <Compile Include="..\SampleClient\Top10Listener.cs" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Content Include="..\..\LICENSE" Pack="true" PackagePath="/" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Include="GitInfo" Version="2.0.26">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
   </ItemGroup>
 </Project>
