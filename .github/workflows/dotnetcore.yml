@@ -39,7 +39,7 @@ jobs:
         working-directory: ./src
     
       - name: Build solution and generate NuGet package
-        run: dotnet pack -c Release -o out --no-restore
+        run: dotnet pack -c Release -o out --no-restore /property:Version=1.2.3.4
         working-directory: ./src
 
       - name: Test
