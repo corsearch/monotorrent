@@ -45,7 +45,7 @@ jobs:
         working-directory: ./src
     
       - name: Build solution and generate NuGet package
-        run: dotnet pack -c Release -o out --no-restore /property:Version=$VERSION
+        run: dotnet pack -c Release -o out --no-restore /property:Version=${VERSION}
         working-directory: ./src
         env:
           VERSION: ${{ steps.incr-version.outputs.version }}
