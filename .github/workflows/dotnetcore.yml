@@ -65,5 +65,6 @@ jobs:
             github_token: ${{secrets.GITHUB_TOKEN}}
 
       - name: Push generated package to GitHub registry
-        run: dotnet nuget push .\out\*.nupkg --skip-duplicate --source "https://nuget.pkg.github.com/marketly/index.json" -k ${{secrets.GITHUB_TOKEN}} --no-symbols true
-        working-directory: ./src
+        run: .\pushnuget src\out ${{secrets.GITHUB_TOKEN}}
+        shell: pwsh
+        working-directory: .
