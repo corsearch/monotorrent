@@ -4,6 +4,8 @@
   <PropertyGroup>
     <TargetFramework>net472</TargetFramework>
     <OutputType>Exe</OutputType>
+    <RepositoryType>git</RepositoryType>
+    <RepositoryUrl>https://github.com/marketly/monotorrent</RepositoryUrl>
   </PropertyGroup>
 
   <ItemGroup>
