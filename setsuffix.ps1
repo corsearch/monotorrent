@@ -2,7 +2,8 @@ $versionSuffix = ""
 
 if ($args[0] -eq 'refs/heads/development')
 {
-	$versionSuffix = "-prerelease"
+    $gitHash = git rev-parse --short HEAD
+	$versionSuffix = "-prerelease-" + $gitHash
 }
 
 # set version number in workflow variable in GitHub actions
