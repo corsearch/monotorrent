@@ -41,13 +41,19 @@ jobs:
         run: .\incrversion
         shell: pwsh
         working-directory: .
+
+      - name: Set version suffix
+        id: version-suffix
+        run: .\setsuffix
+        shell: pwsh
+        working-directory: .
   
       - name: Install dependencies
         run: nuget restore MonoTorrent.sln
         working-directory: ./src
     
       - name: Build solution and generate NuGet package
-        run: dotnet pack -c Release -o out --no-restore /property:Version=${{ steps.incr-version.outputs.version }}
+        run: dotnet pack -c Release -o out --no-restore /property:Version=${{ steps.incr-version.outputs.version }}${{ steps.version-suffix.outputs.versionsuffix }}
         working-directory: ./src
 
       - name: Test
