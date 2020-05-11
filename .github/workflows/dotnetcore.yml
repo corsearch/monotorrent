@@ -53,6 +53,7 @@ jobs:
         working-directory: ./src
     
       - name: Commit files
+        if: github.ref == 'refs/heads/master'
         run: |
            git config --local user.email "action@github.com"
            git config --local user.name "GitHub Action"
@@ -65,6 +66,7 @@ jobs:
             github_token: ${{secrets.GITHUB_TOKEN}}
 
       - name: Push generated package to GitHub registry
+        if: github.ref == 'refs/heads/master'
         run: .\pushnuget src\out ${{secrets.GITHUB_TOKEN}}
         shell: pwsh
         working-directory: .
