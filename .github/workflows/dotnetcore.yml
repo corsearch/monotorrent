@@ -44,7 +44,7 @@ jobs:
 
       - name: Set version suffix
         id: version-suffix
-        run: .\setsuffix {{ github.ref }}
+        run: .\setsuffix ${{ github.ref }}
         shell: pwsh
         working-directory: .
   
@@ -75,7 +75,7 @@ jobs:
         working-directory: .
 
       - name: Push changes
-        uses: ad-m/github-push-action@master
+        uses: ad-m/github-push-action@${{ github.ref }}
         with:
             github_token: ${{secrets.GITHUB_TOKEN}}
         if: github.ref == 'refs/heads/master' ||  github.ref == 'refs/heads/development'
