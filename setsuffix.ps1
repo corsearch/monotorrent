@@ -1,6 +1,6 @@
 $versionSuffix = ""
 
-if ($args[0] -like '*development*')
+if ($args[0] -eq 'refs/heads/development')
 {
 	$versionSuffix = "-prerelease"
 }

@@ -44,7 +44,7 @@ jobs:
 
       - name: Set version suffix
         id: version-suffix
-        run: .\setsuffix
+        run: .\setsuffix {{ github.ref }}
         shell: pwsh
         working-directory: .
   
