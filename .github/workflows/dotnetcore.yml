@@ -12,7 +12,7 @@ jobs:
   build:
     runs-on: windows-latest
 
-    name: Update NuGet package
+    name: Build Branch
 
     steps:
 
@@ -52,12 +52,12 @@ jobs:
         run: nuget restore MonoTorrent.sln
         working-directory: ./src
     
-      - name: Build solution and generate NuGet package
+      - name: Build solution and generate NuGet package (master & development branch)
         if: github.ref == 'refs/heads/master' ||  github.ref == 'refs/heads/development'
         run: dotnet pack -c Release -o out --no-restore /property:Version=${{ steps.incr-version.outputs.version }}${{ steps.version-suffix.outputs.versionsuffix }}
         working-directory: ./src
 
-      - name: Build solution and generate NuGet package
+      - name: Build solution and generate NuGet package (feature branch)
         if: github.ref != 'refs/heads/master' &&  github.ref != 'refs/heads/development'
         run: dotnet pack -c Release -o out --no-restore
         working-directory: ./src
