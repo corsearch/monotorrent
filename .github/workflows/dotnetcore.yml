@@ -66,6 +66,7 @@ jobs:
         uses: ad-m/github-push-action@master
         with:
             github_token: ${{secrets.GITHUB_TOKEN}}
+        if: github.ref == 'refs/heads/master'
 
       - name: Push generated package to GitHub registry
         if: github.ref == 'refs/heads/master'
