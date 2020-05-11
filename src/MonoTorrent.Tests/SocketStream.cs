@@ -98,6 +98,7 @@ namespace MonoTorrent
                 }
                 return toCopy;
             } catch {
+                /*dddd*/
                 return 0;
             }
         }
