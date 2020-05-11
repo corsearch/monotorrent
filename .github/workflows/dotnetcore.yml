@@ -53,7 +53,13 @@ jobs:
         working-directory: ./src
     
       - name: Build solution and generate NuGet package
+        if: github.ref == 'refs/heads/master' ||  github.ref == 'refs/heads/development'
         run: dotnet pack -c Release -o out --no-restore /property:Version=${{ steps.incr-version.outputs.version }}${{ steps.version-suffix.outputs.versionsuffix }}
+        working-directory: ./src
+
+      - name: Build solution and generate NuGet package
+        if: github.ref != 'refs/heads/master' &&  github.ref != 'refs/heads/development'
+        run: dotnet pack -c Release -o out --no-restore
         working-directory: ./src
 
       - name: Test
@@ -61,7 +67,7 @@ jobs:
         working-directory: ./src
     
       - name: Commit files
-        if: github.ref.contains('refs/heads/master', 'refs/heads/development')
+        if: github.ref == 'refs/heads/master' ||  github.ref == 'refs/heads/development'
         run: |
            git config --local user.email "action@github.com"
            git config --local user.name "GitHub Action"
@@ -72,10 +78,10 @@ jobs:
         uses: ad-m/github-push-action@master
         with:
             github_token: ${{secrets.GITHUB_TOKEN}}
-        if: github.ref.contains('refs/heads/master', 'refs/heads/development')
+        if: github.ref == 'refs/heads/master' ||  github.ref == 'refs/heads/development'
 
       - name: Push generated package to GitHub registry
-        if: github.ref.contains('refs/heads/master', 'refs/heads/development')
+        if: github.ref == 'refs/heads/master' ||  github.ref == 'refs/heads/development'
         run: .\pushnuget src\out ${{secrets.GITHUB_TOKEN}}
         shell: pwsh
         working-directory: .
