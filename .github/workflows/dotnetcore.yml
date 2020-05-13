@@ -49,7 +49,7 @@ jobs:
         working-directory: .
   
       - name: Install dependencies
-        run: nuget restore MonoTorrent.sln
+        run: .\restore .
         working-directory: ./src
     
       - name: Build solution and generate NuGet package (master & development branch)
