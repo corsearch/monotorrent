@@ -49,8 +49,9 @@ jobs:
         working-directory: .
   
       - name: Install dependencies
-        run: nuget restore MonoTorrent.sln
-        working-directory: ./src
+        run: .\restore .\src
+        shell: pwsh
+        working-directory: .
     
       - name: Build solution and generate NuGet package (master & development branch)
         if: github.ref == 'refs/heads/master' ||  github.ref == 'refs/heads/development'
